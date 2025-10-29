@@ -17,5 +17,8 @@
     "url": "https://github.com/capelao-org/gerenciador-eventos-BackEnd/issues"
   },
   "homepage": "https://github.com/capelao-org/gerenciador-eventos-BackEnd#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
 }
