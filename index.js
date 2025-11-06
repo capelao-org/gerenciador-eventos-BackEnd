@@ -1,5 +1,10 @@
 import express from 'express';
 import routes from "./routes/indexRoutes.js"
+import dotenv from "dotenv";
+import db from "./config/dbConfig.js"
+dotenv.config();
+
+await db.sync({ alter: true });
 
 const app = express();
 routes(app);
