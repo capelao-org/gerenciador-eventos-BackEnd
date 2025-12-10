@@ -1,5 +1,6 @@
 import {where} from 'sequelize';
 import UsuarioModel from '../model/usuarioModel.js';
+import * as bcrypt from 'bcrypt'; 
 
 class UsuarioController {
     // puxa usuario por especifico id
@@ -28,6 +29,7 @@ class UsuarioController {
 
     static async postUsuario(req, res) {
         try {
+            req.body.senha = await UsuarioController.encryptarSenha(req.body.senha);
             const novoUsuario = await UsuarioModel.create(req.body);
             res.status(201).json({ message: "Criado com sucesso!", UsuarioModel: novoUsuario });
         }
@@ -60,4 +62,13 @@ class UsuarioController {
             res.status(500).json({ message: `${erro.message} - falha ao deletar` });
         }
     }
+
+
+    static encryptarSenha = async (senhaRAW) => {
+        const saltRounds = 10;
+        const salt = await bcrypt.genSalt(saltRounds);
+        return bcrypt.hash(senhaRAW, salt);
+    }
 }
+
+export default UsuarioController;
