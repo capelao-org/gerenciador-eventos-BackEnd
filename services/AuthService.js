@@ -9,15 +9,21 @@ dontenv.config();
 class AuthService{
 
     static entrar = async (nome, senha) => {
-        const usuario = await Usuario.findOne({ nome })
+        const usuario = await Usuario.findOne({ where: { nome } })
 
         if (!usuario) {
-            return "error: credenciais invalidas"
+            return  {
+                resposta: { error: "credenciais invalidas" },
+                estado: 400
+            };
         }
 
         const existe = await bcrypt.compare(senha, usuario.senha)
         if (!existe) {
-            return "error: credenciais invalidas"
+            return {
+                resposta: { error: "credenciais invalidas" },
+                estado: 400
+            };
         }
 
         const token = jsonwebtoken.sign(
@@ -26,7 +32,10 @@ class AuthService{
             { expiresIn: '1h' }
         )
 
-        return {usuario, token}
+        return {
+            resposta: { token },
+            estado: 200
+        };
     }
 }
 
