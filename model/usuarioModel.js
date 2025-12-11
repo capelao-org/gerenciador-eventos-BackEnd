@@ -14,6 +14,10 @@ const UsuarioModel = db.define("Usuario",
         senha: {
             type: DataTypes.STRING,
         },
+        ativo: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true,
+        }
     }
 )
 
