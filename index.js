@@ -13,6 +13,10 @@ app.use(cors({
   origin: 'http://127.0.0.1:5500' //colocar seu ip e porta que esta rodando o frontend
 }));
 
+const path = require("path");
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
+
+
 routes(app);
 
 const PORT = process.env.PORT || 3000;

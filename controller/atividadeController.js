@@ -27,11 +27,19 @@ class AtividadeController {
 
     static async postAtividade(req, res) {
         try {
-            const novoAtividade = await AtividadeModel.create(req.body);
-            res.status(201).json({message: "Criado com sucesso!", AtividadeModel: novoAtividade})
-        } catch (error) {
-            res.status(500).json({ message: `${error.message} - falha ao  cadastrar`});
-        }
+        const urlImagemAtividade = req.file ? `/uploads/${req.file.filename}` : null;
+
+        const dados = {
+            ...req.body,
+            ...(urlImagemAtividade ? { urlImagemAtividade } : {})
+        };
+
+        const novaAtividade = await AtividadeModel.create(dados);
+
+        return res.status(201).json({ message: "Criado com sucesso!", AtividadeModel: novaAtividade });
+    } catch (error) {
+    return res.status(500).json({ message: `${error.message} - falha ao cadastrar` });
+    }
     }
 
     static async putAtividade(req, res) {

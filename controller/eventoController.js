@@ -27,24 +27,49 @@ class EventoController {
 
     static async postEvento(req, res) {
         try {
-            const novoEvento = await EventoModel.create(req.body);
-            res.status(201).json({message: "Criado com sucesso!", EventoModel: novoEvento})
-        } catch (error) {
-            res.status(500).json({ message: `${error.message} - falha ao  cadastrar`});
-        }
-    }
+        // ✅ monta url da imagem (se veio arquivo)
+        const urlImagemCapa = req.file ? `/uploads/${req.file.filename}` : null;
 
-    static async putEvento(req, res) {
-        try {
-            const idProcurado = req.params.id;
-            const eventoAchado = await EventoModel.findOne({ where: { id: idProcurado}})
-            await eventoAchado.update(req.body);
-            await eventoAchado.save();
-            res.status(200).json({massage: "evento atualizado"});
-        } catch (erro) {
-            res.status(500).json({ message: `${erro.message} - falha ao listar`});
-        }
-    }
+        // ✅ junta body + imagem (sem quebrar seu default se não mandar imagem)
+        const dados = {
+            ...req.body,
+            ...(urlImagemCapa ? { urlImagemCapa } : {})
+        };
+
+        const novoEvento = await EventoModel.create(dados);
+
+        return res.status(201).json({
+            message: "Criado com sucesso!",
+            EventoModel: novoEvento
+        });
+  } catch (error) {
+    return res.status(500).json({ message: `${error.message} - falha ao cadastrar` });
+  }
+}
+
+
+    static async putAtividade(req, res) {
+  try {
+    const idProcurado = req.params.id;
+
+    const atividadeAchada = await AtividadeModel.findOne({ where: { id: idProcurado } });
+    if (!atividadeAchada) return res.status(404).json({ message: "Atividade não encontrada" });
+
+    const urlImagemAtividade = req.file ? `/uploads/${req.file.filename}` : null;
+
+    const dadosAtualizacao = {
+      ...req.body,
+      ...(urlImagemAtividade ? { urlImagemAtividade } : {})
+    };
+
+    await atividadeAchada.update(dadosAtualizacao);
+
+    return res.status(200).json({ message: "atividade atualizada", atividade: atividadeAchada });
+  } catch (error) {
+    return res.status(500).json({ message: `${error.message} - falha ao atualizar` });
+  }
+}
+
 
     static async deleteEvento(req, res) {
         try {
