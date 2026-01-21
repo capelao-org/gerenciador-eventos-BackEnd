@@ -8,8 +8,8 @@ dontenv.config();
 
 class AuthService{
 
-    static entrar = async (nome, senha) => {
-        const usuario = await Usuario.findOne({ where: { nome } })
+    static entrar = async (usuarioEntrando, senha) => {
+        const usuario = await Usuario.findOne({ where: { usuario: usuarioEntrando } })
 
         if (!usuario) {
             return  {
@@ -27,16 +27,20 @@ class AuthService{
         }
 
         const token = jsonwebtoken.sign(
-            {id: usuario.id, nome: usuario.nome},
+            {id: usuario.id, nome: usuario.nome, role: usuario.role},
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
         )
 
+        const id = usuario.id;
+
         return {
-            resposta: { token },
+            resposta: { token, id},
             estado: 200
         };
     }
+
+    
 }
 
 export default AuthService;

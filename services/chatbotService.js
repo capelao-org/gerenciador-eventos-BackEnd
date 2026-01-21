@@ -1,11 +1,11 @@
-import Evento from "../model/Evento.js";
-import Atividade from "../model/Atividade.js";
+import Evento from "../model/eventoModel.js";
+import Atividade from "../model/atividadeModel.js";
 
-export async function responderPergunta(pergunta) {
+export async function responderPergunta(pergunta, idEvento) {
   const texto = pergunta.toLowerCase();
 
-  const evento = await Evento.findOne();
-  const atividades = await Atividade.findAll();
+  const evento = await Evento.findOne({where: {ativo: true, id: idEvento }});
+  const atividades = await Atividade.findAll({ where: {ativo: true, id_evento: idEvento}});
 
   if (!evento) {
     return "Nenhum evento cadastrado no sistema.";
@@ -17,7 +17,7 @@ export async function responderPergunta(pergunta) {
   }
 
   if (texto.includes("data") || texto.includes("quando")) {
-    return `O evento acontece em ${evento.data}.`;
+    return `O evento acontece em ${evento.dataInicial}.`;
   }
 
   if (texto.includes("local") || texto.includes("onde")) {
@@ -25,7 +25,7 @@ export async function responderPergunta(pergunta) {
   }
 
   if (texto.includes("horário") || texto.includes("hora")) {
-    return `O evento começa às ${evento.horario}.`;
+    return `O evento começa às ${evento.dataInicial}.`;
   }
 
   // 🔹 ATIVIDADES (geral)

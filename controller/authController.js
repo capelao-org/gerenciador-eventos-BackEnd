@@ -4,8 +4,8 @@ import AuthService from "../services/AuthService.js";
 class AuthController {
     
     static logar = async (req, res) => {
-        const {nome, senha} = req.body;
-        const {resposta, estado} = await AuthService.entrar(nome, senha)
+        const {usuario, senha} = req.body;
+        const {resposta, estado} = await AuthService.entrar(usuario, senha)
         res.status(Number(estado)).json(resposta);
     }
 }

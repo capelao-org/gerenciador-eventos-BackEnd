@@ -2,12 +2,14 @@ import {where} from 'sequelize';
 import UsuarioModel from '../model/usuarioModel.js';
 import * as bcrypt from 'bcrypt'; 
 
+import UsuarioService from "../services/UsuarioService.js"
+
 class UsuarioController {
     // puxa usuario por especifico id
     static async getUsuario(req, res) {
         try {
             const idProcurado = req.params.id;
-            const usuarioAchado = await UsuarioModel.findOne({ where: { id: idProcurado } });
+            const usuarioAchado = await UsuarioModel.findOne({ where: { id: idProcurado, ativo: true } });
 
             res.status(200).send(usuarioAchado);
         }
@@ -18,7 +20,7 @@ class UsuarioController {
     // puxa tds os usuarios
     static async getUsuarios(req, res) {
         try {
-            const usuariosAchados = await UsuarioModel.findAll();
+            const usuariosAchados = await UsuarioModel.findAll({ attributes: ["nome", "usuario",  "id", "urlImagemPerfil"], where: { ativo: true } });
 
             res.status(200).send(usuariosAchados);
         }
@@ -29,25 +31,28 @@ class UsuarioController {
 
     static async postUsuario(req, res) {
         try {
-            req.body.senha = await UsuarioController.encryptarSenha(req.body.senha);
-            const novoUsuario = await UsuarioModel.create(req.body);
+            // req.body.senha = await UsuarioController.encryptarSenha(req.body.senha);
+            // const novoUsuario = await UsuarioModel.create(req.body);
+            const novoUsuario = await UsuarioService.criarUsuario(req.body)
             res.status(201).json({ message: "Criado com sucesso!", UsuarioModel: novoUsuario });
         }
         catch (error) {
-            res.status(500).json({ message: `${error.message} - falha ao cadastrar` });
+            return res.status(error.statusCode || 500).json({
+                erro: error.message
+        });
         }
     }
 
     static async putUsuario(req, res) {
         try {
-            const idProcurado = req.params.id;
-            const usuarioAchado = await UsuarioModel.findOne({ where: { id: idProcurado } });
-            await usuarioAchado.update(req.body);
-            await usuarioAchado.save();
-            res.status(200).json({ message: "Usuário atualizado" });
+            const usuarioAtualizado = await UsuarioService.updateUsuario(req, req.body)
+            
+            res.status(200).json({ message: "Usuário atualizado", Usuario: usuarioAtualizado });
         }
-        catch (erro) {
-            res.status(500).json({ message: `${erro.message} - falha ao listar` });
+        catch (error) {
+            return res.status(error.statusCode || 500).json({
+                erro: error.message
+        });
         }
     }
 
@@ -55,7 +60,7 @@ class UsuarioController {
         try {
             const idProcurado = req.params.id;
             const usuarioAchado = await UsuarioModel.findOne({ where: { id: idProcurado } });
-            await usuarioAchado.destroy();
+            usuarioAchado.ativo = false
             res.status(200).json({ message: "Usuário deletado" });
         }
         catch (erro) {
