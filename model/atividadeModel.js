@@ -23,6 +23,10 @@ const AtividadeModel = db.define("Atividade",
         descricao: {
             type: DataTypes.STRING,
         },
+        urlImagemAtividade: {
+            type: DataTypes.STRING,
+            defaultValue: "https://uploads-eventos.s3.us-east-2.amazonaws.com/usuarios/6f34aaa8-b33f-48a2-9806-aa922bb6b7ea.jpeg"
+        },
         ativo: {
             type: DataTypes.BOOLEAN,
             defaultValue: true,

@@ -1,11 +1,11 @@
-import Evento from "../model/Evento.js";
-import Atividade from "../model/Atividade.js";
+import Evento from "../model/eventoModel.js";
+import Atividade from "../model/atividadeModel.js";
 
-export async function responderPergunta(pergunta) {
+export async function responderPergunta(pergunta, idEvento) {
   const texto = pergunta.toLowerCase();
 
-  const evento = await Evento.findOne();
-  const atividades = await Atividade.findAll();
+  const evento = await Evento.findOne({where: {ativo: true, id: idEvento }});
+  const atividades = await Atividade.findAll({ where: {ativo: true, id_evento: idEvento}});
 
   if (!evento) {
     return "Nenhum evento cadastrado no sistema.";
@@ -17,7 +17,7 @@ export async function responderPergunta(pergunta) {
   }
 
   if (texto.includes("data") || texto.includes("quando")) {
-    return `O evento acontece em ${evento.data}.`;
+    return `O evento acontece em ${evento.dataInicial}.`;
   }
 
   if (texto.includes("local") || texto.includes("onde")) {
@@ -25,7 +25,7 @@ export async function responderPergunta(pergunta) {
   }
 
   if (texto.includes("horário") || texto.includes("hora")) {
-    return `O evento começa às ${evento.horario}.`;
+    return `O evento começa às ${evento.dataInicial}.`;
   }
 
   // 🔹 ATIVIDADES (geral)
@@ -35,7 +35,7 @@ export async function responderPergunta(pergunta) {
     }
 
     const lista = atividades
-      .map(a => `• ${a.titulo} (${a.horario})`)
+      .map(a => `• ${a.titulo}`)
       .join("\n");
 
     return `As atividades do evento são:\n${lista}`;
@@ -44,7 +44,7 @@ export async function responderPergunta(pergunta) {
   // 🔹 ATIVIDADE específica
   for (let atividade of atividades) {
     if (texto.includes(atividade.titulo.toLowerCase())) {
-      return `${atividade.titulo}: ${atividade.descricao} (Horário: ${atividade.horario})`;
+      return `${atividade.titulo}: ${atividade.descricao}`;
     }
   }
 
@@ -59,7 +59,7 @@ export async function responderPergunta(pergunta) {
     }
 
     return filtradas
-      .map(a => `• ${a.titulo} (${a.horario})`)
+      .map(a => `• ${a.titulo}`)
       .join("\n");
   }
 

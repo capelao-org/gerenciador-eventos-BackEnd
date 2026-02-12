@@ -7,13 +7,14 @@ dotenv.config();
 const database = process.env.DATABASE_NAME;
 const username = process.env.DATABASE_USER;
 const password = process.env.DATABASE_PASS;
+const host = process.env.DATABASE_HOST;
 
 const db = new Sequelize({
   dialect: MySqlDialect,
   database: database,
   user: username,
   password: password,
-  host: 'localhost',
+  host: host,
   port: 3306,
 });
 

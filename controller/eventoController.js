@@ -1,16 +1,33 @@
 import { where } from "sequelize";
 import EventoModel from "../model/eventoModel.js"
+import AtividadeModel from "../model/atividadeModel.js"
+import uploadService from "../services/UploadService.js";
 
 class EventoController {
     static async getEvento(req, res) {
         try{
             const idProcurado = req.params.id;
-            const eventoAchado = await EventoModel.findOne({ where: { id: idProcurado}})
+
+            const eventoAchado = await EventoModel.findOne({where: {
+                id: idProcurado,
+                ativo: true
+            },
+            include: [
+                {
+                    model: AtividadeModel,
+                    as: "atividades"
+                }
+            ]
+        })
+
+            if (!eventoAchado) {
+                return res.status(404).json({ erro: "Evento não encontrado" });
+            }
 
             res.status(200).send(eventoAchado)
         }
         catch {
-            res.status(400)
+            return res.status(400)
         }
     }
 
@@ -27,6 +44,7 @@ class EventoController {
 
     static async postEvento(req, res) {
         try {
+            req.body.urlImagemCapa = await uploadService.uparImg(req);
             const novoEvento = await EventoModel.create(req.body);
             res.status(201).json({message: "Criado com sucesso!", EventoModel: novoEvento})
         } catch (error) {
