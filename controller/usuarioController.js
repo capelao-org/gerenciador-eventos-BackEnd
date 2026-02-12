@@ -31,8 +31,6 @@ class UsuarioController {
 
     static async postUsuario(req, res) {
         try {
-            // req.body.senha = await UsuarioController.encryptarSenha(req.body.senha);
-            // const novoUsuario = await UsuarioModel.create(req.body);
             const novoUsuario = await UsuarioService.criarUsuario(req.body)
             res.status(201).json({ message: "Criado com sucesso!", UsuarioModel: novoUsuario });
         }

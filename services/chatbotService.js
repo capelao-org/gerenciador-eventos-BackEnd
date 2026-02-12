@@ -35,7 +35,7 @@ export async function responderPergunta(pergunta, idEvento) {
     }
 
     const lista = atividades
-      .map(a => `• ${a.titulo} (${a.horario})`)
+      .map(a => `• ${a.titulo}`)
       .join("\n");
 
     return `As atividades do evento são:\n${lista}`;
@@ -44,7 +44,7 @@ export async function responderPergunta(pergunta, idEvento) {
   // 🔹 ATIVIDADE específica
   for (let atividade of atividades) {
     if (texto.includes(atividade.titulo.toLowerCase())) {
-      return `${atividade.titulo}: ${atividade.descricao} (Horário: ${atividade.horario})`;
+      return `${atividade.titulo}: ${atividade.descricao}`;
     }
   }
 
@@ -59,7 +59,7 @@ export async function responderPergunta(pergunta, idEvento) {
     }
 
     return filtradas
-      .map(a => `• ${a.titulo} (${a.horario})`)
+      .map(a => `• ${a.titulo}`)
       .join("\n");
   }
 
